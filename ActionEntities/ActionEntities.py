@@ -1,4 +1,4 @@
-from ActionEntities import ActionEntity, EnemyEntityTemplate, ShootingAbilityEntity
+from ActionEntityTemplates import ActionEntityTemplate, EnemyEntityTemplate, ShootingAbilityEntity
 import json
 import pygame
 
@@ -16,7 +16,7 @@ class PlayerEntity(ShootingAbilityEntity):
                  group_of_bullets):
         super(PlayerEntity, self).__init__(start_x_position,
                                            start_y_position,
-                                           class_data["PlayerEntity"]["default weapon preset"],
+                                           class_data["PlayerEntity"]["default bullet preset"],
                                            group_of_bullets,
                                            class_data["PlayerEntity"]["reload change index"],
                                            "ActionEntitiesAssets/Player/something.jpg")
@@ -35,7 +35,7 @@ class PlayerEntity(ShootingAbilityEntity):
         self.kill()
 
 
-class MysteryShipEntity(ActionEntity):
+class MysteryShipEntity(ActionEntityTemplate):
     class_health = class_data["MysteryShipEntity"]["health"]
     frames_to_be_killed = 10
 
@@ -63,7 +63,7 @@ class MysteryShipEntity(ActionEntity):
             self.kill()
 
 
-class ShieldBoxEntity(ActionEntity):
+class ShieldBoxEntity(ActionEntityTemplate):
     class_health = class_data["ShieldBoxEntity"]["health"]
     killing_states = [pygame.image.load("ActionEntitiesAssets/ShieldBox/State_{}.jpg".format(i + 1)) for i in
                       range(class_health)]
@@ -103,7 +103,7 @@ class LevelOneEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelOneEnemy, self).__init__(start_x_position,
                                             start_y_position,
-                                            class_data["LevelOneEnemy"]["default weapon preset"],
+                                            class_data["LevelOneEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelOneEnemy"]["reload change index"],
                                             "ActionEntitiesAssets/Enemy/LevelOneEnemy.jpg")
@@ -119,7 +119,7 @@ class LevelTwoEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelTwoEnemy, self).__init__(start_x_position,
                                             start_y_position,
-                                            class_data["LevelTwoEnemy"]["default weapon preset"],
+                                            class_data["LevelTwoEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelTwoEnemy"]["reload change index"],
                                             "ActionEntitiesAssets/Enemy/LevelTwoEnemy.jpg")
@@ -135,7 +135,7 @@ class LevelThreeEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelThreeEnemy, self).__init__(start_x_position,
                                               start_y_position,
-                                              class_data["LevelThreeEnemy"]["default weapon preset"],
+                                              class_data["LevelThreeEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelThreeEnemy"]["reload change index"],
                                               "ActionEntitiesAssets/Enemy/LevelThreeEnemy.jpg")
@@ -151,7 +151,7 @@ class LevelFourEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelFourEnemy, self).__init__(start_x_position,
                                              start_y_position,
-                                             class_data["LevelFourEnemy"]["default weapon preset"],
+                                             class_data["LevelFourEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelFourEnemy"]["reload change index"],
                                              "ActionEntitiesAssets/Enemy/LevelFourEnemy.jpg")
@@ -167,7 +167,7 @@ class LevelFiveEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelFiveEnemy, self).__init__(start_x_position,
                                              start_y_position,
-                                             class_data["LevelFiveEnemy"]["default weapon preset"],
+                                             class_data["LevelFiveEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelFiveEnemy"]["reload change index"],
                                              "ActionEntitiesAssets/Enemy/LevelFiveEnemy.jpg")
@@ -183,7 +183,7 @@ class LevelSixEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelSixEnemy, self).__init__(start_x_position,
                                             start_y_position,
-                                            class_data["LevelSixEnemy"]["default weapon preset"],
+                                            class_data["LevelSixEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelSixEnemy"]["reload change index"],
                                             "ActionEntitiesAssets/Enemy/LevelSixEnemy.jpg")
@@ -199,7 +199,7 @@ class LevelSevenEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelSevenEnemy, self).__init__(start_x_position,
                                               start_y_position,
-                                              class_data["LevelSevenEnemy"]["default weapon preset"],
+                                              class_data["LevelSevenEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelSevenEnemy"]["reload change index"],
                                               "ActionEntitiesAssets/Enemy/LevelSevenEnemy.jpg")
@@ -215,7 +215,7 @@ class LevelEightEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelEightEnemy, self).__init__(start_x_position,
                                               start_y_position,
-                                              class_data["LevelEightEnemy"]["default weapon preset"],
+                                              class_data["LevelEightEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelEightEnemy"]["reload change index"],
                                               "ActionEntitiesAssets/Enemy/LevelEightEnemy.jpg")
@@ -231,7 +231,7 @@ class LevelNineEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelNineEnemy, self).__init__(start_x_position,
                                              start_y_position,
-                                             class_data["LevelNineEnemy"]["default weapon preset"],
+                                             class_data["LevelNineEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelNineEnemy"]["reload change index"],
                                              "ActionEntitiesAssets/Enemy/LevelNineEnemy.jpg")
@@ -247,7 +247,7 @@ class LevelTenEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelTenEnemy, self).__init__(start_x_position,
                                             start_y_position,
-                                            class_data["LevelTenEnemy"]["default weapon preset"],
+                                            class_data["LevelTenEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelTenEnemy"]["reload change index"],
                                             "ActionEntitiesAssets/Enemy/LevelTenEnemy.jpg")
@@ -263,7 +263,7 @@ class LevelElevenEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelElevenEnemy, self).__init__(start_x_position,
                                                start_y_position,
-                                               class_data["LevelElevenEnemy"]["default weapon preset"],
+                                               class_data["LevelElevenEnemy"]["default bullet preset"],
                                                group_of_bullets,
                                                class_data["LevelElevenEnemy"]["reload change index"],
                                                "ActionEntitiesAssets/Enemy/LevelElevenEnemy.jpg")
@@ -279,7 +279,7 @@ class LevelTwelveEnemy(EnemyEntityTemplate):
                  group_of_bullets):
         super(LevelTwelveEnemy, self).__init__(start_x_position,
                                                start_y_position,
-                                               class_data["LevelTwelveEnemy"]["default weapon preset"],
+                                               class_data["LevelTwelveEnemy"]["default bullet preset"],
                                                group_of_bullets,
                                                class_data["LevelTwelveEnemy"]["reload change index"],
                                                "ActionEntitiesAssets/Enemy/LevelTwelveEnemy.jpg")

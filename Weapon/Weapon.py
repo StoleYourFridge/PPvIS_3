@@ -1,16 +1,23 @@
 import pygame
-from Bullet.Bullet import ConstPowerHighSpeedBullet, ConstPowerMediumSpeedBullet, VariatePowerLowSpeedBullet
+from Bullet.GameBullets import ConstPowerHighSpeedBullet, ConstPowerMediumSpeedBullet, VariatePowerLowSpeedBullet
+import json
+
+
+with open("WeaponReloadData.json", "r") as f:
+    class_data = json.load(f)
 
 
 class Weapon:
-    weapons_call_down = [250, 500, 1000]
+    weapons_call_down = class_data[:]
 
     def __init__(self,
                  parent_entity,
-                 default_bullet_preset):
+                 default_bullet_preset,
+                 reload_change_index):
         self.parent_entity = parent_entity
         self.current_bullet_preset = default_bullet_preset
-        self.current_weapon_call_down = Weapon.weapons_call_down[default_bullet_preset - 1]
+        self.reload_change_index = reload_change_index
+        self.current_weapon_call_down = Weapon.weapons_call_down[default_bullet_preset - 1] * self.reload_change_index
         self.shoot_ability = True
         self.shoot_ability_timer = 0
         self.shoot_ability_clock = pygame.time.Clock()
@@ -46,6 +53,6 @@ class Weapon:
 
     def change_bullet_preset(self, preset):
         self.current_bullet_preset = preset
-        self.current_weapon_call_down = Weapon.weapons_call_down[self.current_bullet_preset - 1]
+        self.current_weapon_call_down = Weapon.weapons_call_down[self.current_bullet_preset - 1] * self.reload_change_index
         self.shoot_ability_clock.tick()
         self.shoot_ability_timer = 0

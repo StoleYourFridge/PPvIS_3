@@ -1,7 +1,7 @@
 import pygame
 
 
-class GameBullet(pygame.sprite.Sprite):
+class GameBulletTemplate(pygame.sprite.Sprite):
     class_damage = None
     class_speed = None
 
@@ -10,7 +10,7 @@ class GameBullet(pygame.sprite.Sprite):
                  start_y_position,
                  is_owner_player,
                  image_filename):
-        super(GameBullet, self).__init__()
+        super(GameBulletTemplate, self).__init__()
         self.image = pygame.image.load(image_filename)
         self.rect = self.image.get_rect()
         self.rect.centerx = start_x_position

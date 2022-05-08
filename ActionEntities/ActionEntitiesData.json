@@ -1,7 +1,88 @@
 {
-  "name": "$name$",
-  "version": "$version$",
-  "dependencies": {
-    $END$
-  }
+     "PlayerEntity": {
+          "health": 3,
+          "default bullet preset": 1,
+          "reload change index": 1,
+          "speed": 15
+     },
+     "MysteryShipEntity": {
+          "health": 1,
+          "price": 100,
+          "speed": 10
+     },
+     "ShieldBoxEntity": {
+          "health": 4
+     },
+     "LevelOneEnemy": {
+          "price": 10,
+          "health": 1,
+          "default bullet preset": 1,
+          "reload change index": 1.5
+     },
+     "LevelTwoEnemy": {
+          "price": 20,
+          "health": 1,
+          "default bullet preset": 1,
+          "reload change index": 1.25
+     },
+     "LevelThreeEnemy": {
+          "price": 30,
+          "health": 1,
+          "default bullet preset": 2,
+          "reload change index": 1.5
+     },
+     "LevelFourEnemy": {
+          "price": 40,
+          "health": 2,
+          "default bullet preset": 3,
+          "reload change index": 1.5
+     },
+     "LevelFiveEnemy": {
+          "price": 50,
+          "health": 2,
+          "default bullet preset": 2,
+          "reload change index": 1.25
+     },
+     "LevelSixEnemy": {
+          "price": 60,
+          "health": 2,
+          "default bullet preset": 3,
+          "reload change index": 1.25
+     },
+     "LevelSevenEnemy": {
+          "price": 70,
+          "health": 3,
+          "default bullet preset": 1,
+          "reload change index": 1
+     },
+     "LevelEightEnemy": {
+          "price": 80,
+          "health": 3,
+          "default bullet preset": 2,
+          "reload change index": 1
+     },
+     "LevelNineEnemy": {
+          "price": 90,
+          "health": 3,
+          "default bullet preset": 3,
+          "reload change index": 1
+     },
+     "LevelTenEnemy": {
+          "price": 100,
+          "health": 4,
+          "default bullet preset": 1,
+          "reload change index": 0.5
+     },
+     "LevelElevenEnemy": {
+          "price": 120,
+          "health": 4,
+          "default bullet preset": 2,
+          "reload change index": 0.5
+     },
+     "LevelTwelveEnemy": {
+          "price": 150,
+          "health": 4,
+          "default bullet preset": 3,
+          "reload change index": 0.75
+     }
 }

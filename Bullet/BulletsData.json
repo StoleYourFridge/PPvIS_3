@@ -1,7 +1,16 @@
 {
-  "name": "$name$",
-  "version": "$version$",
-  "dependencies": {
-    $END$
-  }
+     "ConstPowerHighSpeedBullet": {
+          "damage": 0.5,
+          "speed": 25
+     },
+     "ConstPowerMediumSpeedBullet": {
+          "damage": 1,
+          "speed": 15
+     },
+     "VariatePowerLowSpeedBullet": {
+          "damage": 3,
+          "speed": 10,
+          "border step": 160,
+          "reduce damage step": 1
+     }
 }
