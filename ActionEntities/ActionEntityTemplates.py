@@ -1,5 +1,10 @@
 import pygame
+import json
 from Weapon.Weapon import Weapon
+
+with open("Config/ScreenSettingsData.json", "r") as f:
+    SCREEN_SETTINGS = json.load(f)
+WIDTH = SCREEN_SETTINGS["width"]
 
 
 class ActionEntityTemplate(pygame.sprite.Sprite):
@@ -18,6 +23,9 @@ class ActionEntityTemplate(pygame.sprite.Sprite):
 
     def kill_action(self):
         pass
+
+    def get_health(self):
+        return self.health
 
     def reduce_health(self, reduce):
         self.health -= reduce
@@ -53,7 +61,7 @@ class ShootingAbilityEntity(ActionEntityTemplate):
 
 class EnemyEntityTemplate(ShootingAbilityEntity):
     class_price = None
-    frames_to_be_killed = 10
+    calls_to_be_killed = 2
 
     def __init__(self,
                  start_x_position,
@@ -68,8 +76,9 @@ class EnemyEntityTemplate(ShootingAbilityEntity):
                                                   group_of_bullets,
                                                   reload_change_index,
                                                   image_filename)
+        self.radius = 15
         self.price = self.class_price
-        self.frames_after_killing = 0
+        self.calls_after_killing = 0
         self.killed = False
 
     def get_conflict_side(self):
@@ -80,12 +89,17 @@ class EnemyEntityTemplate(ShootingAbilityEntity):
 
     def kill_action(self):
         self.killed = True
-        self.image = pygame.image.load("ActionEntitiesAssets/Enemy/KillState.jpg")
+        self.image = pygame.image.load("ActionEntities/ActionEntitiesAssets/Enemy/KIllState.png")
+
+    def get_position_status(self):
+        if self.rect.right >= WIDTH or self.rect.left <= 0:
+            return True
+        return False
 
     def update(self, x_shift, y_shift):
         self.rect.centerx += x_shift
         self.rect.centery += y_shift
         if self.killed:
-            self.frames_after_killing += 1
-        if self.frames_after_killing == self.frames_to_be_killed:
+            self.calls_after_killing += 1
+        if self.calls_after_killing == self.calls_to_be_killed:
             self.kill()

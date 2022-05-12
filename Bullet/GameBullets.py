@@ -2,7 +2,7 @@ from Bullet.GameBulletTemplate import GameBulletTemplate
 import json
 
 
-with open("BulletsData.json", "r") as f:
+with open("Config/BulletsData.json", "r") as f:
     class_data = json.load(f)
 
 
@@ -17,7 +17,7 @@ class ConstPowerHighSpeedBullet(GameBulletTemplate):
         super(ConstPowerHighSpeedBullet, self).__init__(start_x_position,
                                                         start_y_position,
                                                         is_owner_player,
-                                                        "BulletAssets/something.jpg")
+                                                            "Bullet/BulletAssets/ConstPowerHighSpeedBullet.png")
 
 
 class ConstPowerMediumSpeedBullet(GameBulletTemplate):
@@ -31,7 +31,7 @@ class ConstPowerMediumSpeedBullet(GameBulletTemplate):
         super(ConstPowerMediumSpeedBullet, self).__init__(start_x_position,
                                                           start_y_position,
                                                           is_owner_player,
-                                                          "BulletAssets/something.jpg")
+                                                          "Bullet/BulletAssets/ConstPowerMediumSpeedBullet.png")
 
 
 class VariatePowerLowSpeedBullet(GameBulletTemplate):
@@ -47,7 +47,7 @@ class VariatePowerLowSpeedBullet(GameBulletTemplate):
         super(VariatePowerLowSpeedBullet, self).__init__(start_x_position,
                                                          start_y_position,
                                                          is_owner_player,
-                                                         "BulletAssets/something.jpg")
+                                                         "Bullet/BulletAssets/VariatePowerLowSpeedBullet.png")
         self.passed_distance = 0
         self.next_border = VariatePowerLowSpeedBullet.border_step
 

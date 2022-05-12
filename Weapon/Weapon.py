@@ -1,9 +1,9 @@
-import pygame
 from Bullet.GameBullets import ConstPowerHighSpeedBullet, ConstPowerMediumSpeedBullet, VariatePowerLowSpeedBullet
+import pygame
 import json
 
 
-with open("WeaponReloadData.json", "r") as f:
+with open("Config/WeaponReloadData.json", "r") as f:
     class_data = json.load(f)
 
 

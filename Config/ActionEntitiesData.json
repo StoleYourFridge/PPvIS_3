@@ -3,12 +3,12 @@
           "health": 3,
           "default bullet preset": 1,
           "reload change index": 1,
-          "speed": 15
+          "speed": 8
      },
      "MysteryShipEntity": {
-          "health": 1,
+          "health": 0.1,
           "price": 100,
-          "speed": 10
+          "speed": 4
      },
      "ShieldBoxEntity": {
           "health": 4
@@ -81,8 +81,8 @@
      },
      "LevelTwelveEnemy": {
           "price": 150,
-          "health": 4,
+          "health": 6,
           "default bullet preset": 3,
-          "reload change index": 0.75
+          "reload change index": 0.5
      }
 }

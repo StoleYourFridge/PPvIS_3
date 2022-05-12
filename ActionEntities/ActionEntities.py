@@ -1,10 +1,15 @@
-from ActionEntityTemplates import ActionEntityTemplate, EnemyEntityTemplate, ShootingAbilityEntity
+from ActionEntities.ActionEntityTemplates import ActionEntityTemplate, EnemyEntityTemplate, ShootingAbilityEntity
 import json
 import pygame
 
 
-with open("ActionEntitiesData.json", "r") as f:
+with open("Config/ActionEntitiesData.json", "r") as f:
     class_data = json.load(f)
+
+with open("Config/ScreenSettingsData.json", "r") as f:
+    SCREEN_SETTINGS = json.load(f)
+WIDTH = SCREEN_SETTINGS["width"]
+HEIGHT = SCREEN_SETTINGS["height"]
 
 
 class PlayerEntity(ShootingAbilityEntity):
@@ -19,17 +24,43 @@ class PlayerEntity(ShootingAbilityEntity):
                                            class_data["PlayerEntity"]["default bullet preset"],
                                            group_of_bullets,
                                            class_data["PlayerEntity"]["reload change index"],
-                                           "ActionEntitiesAssets/Player/something.jpg")
+                                           "ActionEntities/ActionEntitiesAssets/Player/Player.png")
         self.speed = class_data["PlayerEntity"]["speed"]
 
-    def move(self, parameter):
-        if parameter == "right":
-            self.rect.centerx += self.speed
-        elif parameter == "left":
+    def stabilize_position(self):
+        if self.rect.right >= WIDTH:
+            self.rect.right = WIDTH
+        if self.rect.left <= 0:
+            self.rect.left = 0
+
+    def update(self):
+        pressed_keys = pygame.key.get_pressed()
+        if pressed_keys[pygame.K_LEFT]:
             self.rect.centerx -= self.speed
+        if pressed_keys[pygame.K_RIGHT]:
+            self.rect.centerx += self.speed
+        self.stabilize_position()
+        if pressed_keys[pygame.K_SPACE]:
+            self.shoot()
+        if pressed_keys[pygame.K_1]:
+            self.change_bullet_preset(1)
+        elif pressed_keys[pygame.K_2]:
+            self.change_bullet_preset(2)
+        elif pressed_keys[pygame.K_3]:
+            self.change_bullet_preset(3)
 
     def get_conflict_side(self):
         return True
+
+    def repair(self,
+               start_x_position,
+               start_y_position):
+        self.health = PlayerEntity.class_health
+        self.rect.centerx = start_x_position
+        self.rect.centery = start_y_position
+
+    def increase_health(self, increase):
+        self.health += increase
 
     def kill_action(self):
         self.kill()
@@ -44,16 +75,19 @@ class MysteryShipEntity(ActionEntityTemplate):
                  start_y_position):
         super(MysteryShipEntity, self).__init__(start_x_position,
                                                 start_y_position,
-                                                "ActionEntitiesAssets/MysteryShip/AliveState.jpg")
+                                                "ActionEntities/ActionEntitiesAssets/MysteryShip/AliveState.png")
         self.price = class_data["MysteryShipEntity"]["price"]
-        self.speed = class_data["MysteryShipEntity"]["speed"]
+        self.speed = -class_data["MysteryShipEntity"]["speed"]
         self.frames_to_be_killed = self.frames_to_be_killed
         self.frames_after_killing = 0
         self.killed = False
 
     def kill_action(self):
         self.killed = True
-        self.image = pygame.image.load("ActionEntitiesAssets/MysteryShip/KillState.jpg")
+        self.image = pygame.image.load("ActionEntities/ActionEntitiesAssets/Enemy/KillState.png")
+
+    def get_price(self):
+        return self.price
 
     def update(self):
         self.rect.centerx += self.speed
@@ -65,7 +99,7 @@ class MysteryShipEntity(ActionEntityTemplate):
 
 class ShieldBoxEntity(ActionEntityTemplate):
     class_health = class_data["ShieldBoxEntity"]["health"]
-    killing_states = [pygame.image.load("ActionEntitiesAssets/ShieldBox/State_{}.jpg".format(i + 1)) for i in
+    killing_states = [pygame.image.load("ActionEntities/ActionEntitiesAssets/ShieldBox/State_{}.png".format(i + 1)) for i in
                       range(class_health)]
 
     def __init__(self,
@@ -73,16 +107,17 @@ class ShieldBoxEntity(ActionEntityTemplate):
                  start_y_position):
         super(ShieldBoxEntity, self).__init__(start_x_position,
                                               start_y_position,
-                                              "ActionEntitiesAssets/ShieldBox/State_1.jpg")
+                                              "ActionEntities/ActionEntitiesAssets/ShieldBox/State_1.png")
+        self.radius = 12.5
         self.killing_state = 0
 
     def correct_killing_state(self):
-        if self.health <= 3:
-            self.killing_state = 1
+        if self.health <= 1:
+            self.killing_state = 3
         elif self.health <= 2:
             self.killing_state = 2
-        elif self.health <= 1:
-            self.killing_state = 3
+        elif self.health <= 3:
+            self.killing_state = 1
 
     def reduce_health(self, reduce):
         super(ShieldBoxEntity, self).reduce_health(reduce)
@@ -91,6 +126,17 @@ class ShieldBoxEntity(ActionEntityTemplate):
 
     def kill_action(self):
         self.kill()
+
+    @staticmethod
+    def get_price():
+        return 0
+
+
+class DetectionZone(pygame.sprite.Sprite):
+    def __init__(self):
+        super(DetectionZone, self).__init__()
+        self.rect = pygame.Rect((0, HEIGHT - 120),
+                                (WIDTH, 5))
 
 
 class LevelOneEnemy(EnemyEntityTemplate):
@@ -106,7 +152,7 @@ class LevelOneEnemy(EnemyEntityTemplate):
                                             class_data["LevelOneEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelOneEnemy"]["reload change index"],
-                                            "ActionEntitiesAssets/Enemy/LevelOneEnemy.jpg")
+                                            "ActionEntities/ActionEntitiesAssets/Enemy/LevelOneEnemy.png")
 
 
 class LevelTwoEnemy(EnemyEntityTemplate):
@@ -122,7 +168,7 @@ class LevelTwoEnemy(EnemyEntityTemplate):
                                             class_data["LevelTwoEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelTwoEnemy"]["reload change index"],
-                                            "ActionEntitiesAssets/Enemy/LevelTwoEnemy.jpg")
+                                            "ActionEntities/ActionEntitiesAssets/Enemy/LevelTwoEnemy.png")
 
 
 class LevelThreeEnemy(EnemyEntityTemplate):
@@ -138,7 +184,7 @@ class LevelThreeEnemy(EnemyEntityTemplate):
                                               class_data["LevelThreeEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelThreeEnemy"]["reload change index"],
-                                              "ActionEntitiesAssets/Enemy/LevelThreeEnemy.jpg")
+                                              "ActionEntities/ActionEntitiesAssets/Enemy/LevelThreeEnemy.png")
 
 
 class LevelFourEnemy(EnemyEntityTemplate):
@@ -154,7 +200,7 @@ class LevelFourEnemy(EnemyEntityTemplate):
                                              class_data["LevelFourEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelFourEnemy"]["reload change index"],
-                                             "ActionEntitiesAssets/Enemy/LevelFourEnemy.jpg")
+                                             "ActionEntities/ActionEntitiesAssets/Enemy/LevelFourEnemy.png")
 
 
 class LevelFiveEnemy(EnemyEntityTemplate):
@@ -170,7 +216,7 @@ class LevelFiveEnemy(EnemyEntityTemplate):
                                              class_data["LevelFiveEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelFiveEnemy"]["reload change index"],
-                                             "ActionEntitiesAssets/Enemy/LevelFiveEnemy.jpg")
+                                             "ActionEntities/ActionEntitiesAssets/Enemy/LevelFiveEnemy.png")
 
 
 class LevelSixEnemy(EnemyEntityTemplate):
@@ -186,7 +232,7 @@ class LevelSixEnemy(EnemyEntityTemplate):
                                             class_data["LevelSixEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelSixEnemy"]["reload change index"],
-                                            "ActionEntitiesAssets/Enemy/LevelSixEnemy.jpg")
+                                            "ActionEntities/ActionEntitiesAssets/Enemy/LevelSixEnemy.png")
 
 
 class LevelSevenEnemy(EnemyEntityTemplate):
@@ -202,7 +248,7 @@ class LevelSevenEnemy(EnemyEntityTemplate):
                                               class_data["LevelSevenEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelSevenEnemy"]["reload change index"],
-                                              "ActionEntitiesAssets/Enemy/LevelSevenEnemy.jpg")
+                                              "ActionEntities/ActionEntitiesAssets/Enemy/LevelSevenEnemy.png")
 
 
 class LevelEightEnemy(EnemyEntityTemplate):
@@ -218,7 +264,7 @@ class LevelEightEnemy(EnemyEntityTemplate):
                                               class_data["LevelEightEnemy"]["default bullet preset"],
                                               group_of_bullets,
                                               class_data["LevelEightEnemy"]["reload change index"],
-                                              "ActionEntitiesAssets/Enemy/LevelEightEnemy.jpg")
+                                              "ActionEntities/ActionEntitiesAssets/Enemy/LevelEightEnemy.png")
 
 
 class LevelNineEnemy(EnemyEntityTemplate):
@@ -234,7 +280,7 @@ class LevelNineEnemy(EnemyEntityTemplate):
                                              class_data["LevelNineEnemy"]["default bullet preset"],
                                              group_of_bullets,
                                              class_data["LevelNineEnemy"]["reload change index"],
-                                             "ActionEntitiesAssets/Enemy/LevelNineEnemy.jpg")
+                                             "ActionEntities/ActionEntitiesAssets/Enemy/LevelNineEnemy.png")
 
 
 class LevelTenEnemy(EnemyEntityTemplate):
@@ -250,7 +296,7 @@ class LevelTenEnemy(EnemyEntityTemplate):
                                             class_data["LevelTenEnemy"]["default bullet preset"],
                                             group_of_bullets,
                                             class_data["LevelTenEnemy"]["reload change index"],
-                                            "ActionEntitiesAssets/Enemy/LevelTenEnemy.jpg")
+                                            "ActionEntities/ActionEntitiesAssets/Enemy/LevelTenEnemy.png")
 
 
 class LevelElevenEnemy(EnemyEntityTemplate):
@@ -266,7 +312,7 @@ class LevelElevenEnemy(EnemyEntityTemplate):
                                                class_data["LevelElevenEnemy"]["default bullet preset"],
                                                group_of_bullets,
                                                class_data["LevelElevenEnemy"]["reload change index"],
-                                               "ActionEntitiesAssets/Enemy/LevelElevenEnemy.jpg")
+                                               "ActionEntities/ActionEntitiesAssets/Enemy/LevelElevenEnemy.png")
 
 
 class LevelTwelveEnemy(EnemyEntityTemplate):
@@ -282,4 +328,4 @@ class LevelTwelveEnemy(EnemyEntityTemplate):
                                                class_data["LevelTwelveEnemy"]["default bullet preset"],
                                                group_of_bullets,
                                                class_data["LevelTwelveEnemy"]["reload change index"],
-                                               "ActionEntitiesAssets/Enemy/LevelTwelveEnemy.jpg")
+                                               "ActionEntities/ActionEntitiesAssets/Enemy/LevelTwelveEnemy.png")

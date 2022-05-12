@@ -1,4 +1,10 @@
 import pygame
+import json
+
+
+with open("Config/ScreenSettingsData.json", "r") as f:
+    SCREEN_SETTINGS = json.load(f)
+HEIGHT = SCREEN_SETTINGS["height"]
 
 
 class GameBulletTemplate(pygame.sprite.Sprite):
@@ -12,6 +18,7 @@ class GameBulletTemplate(pygame.sprite.Sprite):
                  image_filename):
         super(GameBulletTemplate, self).__init__()
         self.image = pygame.image.load(image_filename)
+        self.image.set_colorkey((0, 0, 0))
         self.rect = self.image.get_rect()
         self.rect.centerx = start_x_position
         self.rect.centery = start_y_position
@@ -22,7 +29,7 @@ class GameBulletTemplate(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.centery += self.speed
-        if self.rect.bottom <= 0 or self.rect.top >= 1080:
+        if self.rect.bottom <= 0 or self.rect.top >= HEIGHT:
             self.kill()
 
     def reduce_damage(self, reduce):
@@ -32,6 +39,3 @@ class GameBulletTemplate(pygame.sprite.Sprite):
 
     def get_damage(self):
         return self.damage
-
-    def get_speed(self):
-        return self.speed
