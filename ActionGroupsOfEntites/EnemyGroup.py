@@ -88,6 +88,10 @@ class EnemyGroup(pygame.sprite.Group):
             current_x_position = root_x_position
             root_y_position -= EnemyGroup.rows_length
 
+    def shoot(self):
+        sprites = self.sprites()
+        sprites[randrange(0, len(self), 1)].shoot()
+
     def change_sprites_horizontal_direction(self):
         if self.direction == "left":
             self.direction = "right"
@@ -113,7 +117,3 @@ class EnemyGroup(pygame.sprite.Group):
     def update(self):
         super(EnemyGroup, self).update(self.x_step, self.y_step)
         self.refresh_predicted_sprites_step()
-
-    def shoot(self):
-        sprites = self.sprites()
-        sprites[randrange(0, len(self), 1)].shoot()

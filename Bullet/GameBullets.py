@@ -17,7 +17,7 @@ class ConstPowerHighSpeedBullet(GameBulletTemplate):
         super(ConstPowerHighSpeedBullet, self).__init__(start_x_position,
                                                         start_y_position,
                                                         is_owner_player,
-                                                            "Bullet/BulletAssets/ConstPowerHighSpeedBullet.png")
+                                                        "Bullet/BulletAssets/ConstPowerHighSpeedBullet.png")
 
 
 class ConstPowerMediumSpeedBullet(GameBulletTemplate):

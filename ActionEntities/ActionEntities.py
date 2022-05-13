@@ -27,11 +27,27 @@ class PlayerEntity(ShootingAbilityEntity):
                                            "ActionEntities/ActionEntitiesAssets/Player/Player.png")
         self.speed = class_data["PlayerEntity"]["speed"]
 
+    def get_conflict_side(self):
+        return True
+
     def stabilize_position(self):
         if self.rect.right >= WIDTH:
             self.rect.right = WIDTH
         if self.rect.left <= 0:
             self.rect.left = 0
+
+    def repair(self,
+               start_x_position,
+               start_y_position):
+        self.health = PlayerEntity.class_health
+        self.rect.centerx = start_x_position
+        self.rect.centery = start_y_position
+
+    def increase_health(self, increase):
+        self.health += increase
+
+    def kill_action(self):
+        self.kill()
 
     def update(self):
         pressed_keys = pygame.key.get_pressed()
@@ -48,22 +64,6 @@ class PlayerEntity(ShootingAbilityEntity):
             self.change_bullet_preset(2)
         elif pressed_keys[pygame.K_3]:
             self.change_bullet_preset(3)
-
-    def get_conflict_side(self):
-        return True
-
-    def repair(self,
-               start_x_position,
-               start_y_position):
-        self.health = PlayerEntity.class_health
-        self.rect.centerx = start_x_position
-        self.rect.centery = start_y_position
-
-    def increase_health(self, increase):
-        self.health += increase
-
-    def kill_action(self):
-        self.kill()
 
 
 class MysteryShipEntity(ActionEntityTemplate):
@@ -82,12 +82,12 @@ class MysteryShipEntity(ActionEntityTemplate):
         self.frames_after_killing = 0
         self.killed = False
 
+    def get_price(self):
+        return self.price
+
     def kill_action(self):
         self.killed = True
         self.image = pygame.image.load("ActionEntities/ActionEntitiesAssets/Enemy/KillState.png")
-
-    def get_price(self):
-        return self.price
 
     def update(self):
         self.rect.centerx += self.speed

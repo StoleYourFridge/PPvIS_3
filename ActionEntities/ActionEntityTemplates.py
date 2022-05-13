@@ -21,11 +21,11 @@ class ActionEntityTemplate(pygame.sprite.Sprite):
         self.rect.centery = start_y_position
         self.health = self.class_health
 
-    def kill_action(self):
-        pass
-
     def get_health(self):
         return self.health
+
+    def kill_action(self):
+        pass
 
     def reduce_health(self, reduce):
         self.health -= reduce
@@ -87,14 +87,14 @@ class EnemyEntityTemplate(ShootingAbilityEntity):
     def get_price(self):
         return self.price
 
-    def kill_action(self):
-        self.killed = True
-        self.image = pygame.image.load("ActionEntities/ActionEntitiesAssets/Enemy/KIllState.png")
-
     def get_position_status(self):
         if self.rect.right >= WIDTH or self.rect.left <= 0:
             return True
         return False
+
+    def kill_action(self):
+        self.killed = True
+        self.image = pygame.image.load("ActionEntities/ActionEntitiesAssets/Enemy/KIllState.png")
 
     def update(self, x_shift, y_shift):
         self.rect.centerx += x_shift
