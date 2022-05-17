@@ -27,6 +27,12 @@ class EnemyGroup(pygame.sprite.Group):
                                   root_y_position,
                                   enemy_entity_names)
 
+    def get_x_step(self):
+        return self.x_step
+
+    def get_y_step(self):
+        return self.y_step
+
     def apply_enemy_entities(self,
                              group_of_bullets,
                              root_x_position,

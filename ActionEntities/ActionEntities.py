@@ -99,8 +99,8 @@ class MysteryShipEntity(ActionEntityTemplate):
 
 class ShieldBoxEntity(ActionEntityTemplate):
     class_health = class_data["ShieldBoxEntity"]["health"]
-    killing_states = [pygame.image.load("ActionEntities/ActionEntitiesAssets/ShieldBox/State_{}.png".format(i + 1)) for i in
-                      range(class_health)]
+    killing_states = [pygame.image.load("ActionEntities/ActionEntitiesAssets/ShieldBox/State_{}.png".format(i + 1))
+                      for i in range(class_health + 1)]
 
     def __init__(self,
                  start_x_position,
@@ -111,8 +111,14 @@ class ShieldBoxEntity(ActionEntityTemplate):
         self.radius = 12.5
         self.killing_state = 0
 
+    @staticmethod
+    def get_price():
+        return 0
+
     def correct_killing_state(self):
-        if self.health <= 1:
+        if self.health <= 0:
+            self.killing_state = 4
+        elif self.health <= 1:
             self.killing_state = 3
         elif self.health <= 2:
             self.killing_state = 2
@@ -123,13 +129,6 @@ class ShieldBoxEntity(ActionEntityTemplate):
         super(ShieldBoxEntity, self).reduce_health(reduce)
         self.correct_killing_state()
         self.image = ShieldBoxEntity.killing_states[self.killing_state]
-
-    def kill_action(self):
-        self.kill()
-
-    @staticmethod
-    def get_price():
-        return 0
 
 
 class DetectionZone(pygame.sprite.Sprite):

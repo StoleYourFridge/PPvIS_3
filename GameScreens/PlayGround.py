@@ -1,17 +1,17 @@
-import sys
 import pygame
 import json
 from ActionEntities.ActionEntities import PlayerEntity, MysteryShipEntity, DetectionZone
 from ActionGroupsOfEntites.ShieldGroup import ShieldGroup
 from ActionGroupsOfEntites.EnemyGroup import EnemyGroup
+from GameScreens.NameInput import name_input
 
 
 with open("Config/ScreenSettingsData.json", "r") as f:
     SCREEN_SETTINGS = json.load(f)
 WIDTH = SCREEN_SETTINGS["width"]
 HEIGHT = SCREEN_SETTINGS["height"]
+SCREEN_BACKGROUND_COLOR = [0, 0, 0]
 FPS = SCREEN_SETTINGS["fps"]
-BLACK = (0, 0, 0)
 PLAYER_DEFAULT_POSITION = [WIDTH / 2, HEIGHT - 50]
 ENEMIES_DEFAULT_POSITION = [WIDTH - 50, HEIGHT / 2]
 MYSTERY_DEFAULT_POSITION = [WIDTH, 30]
@@ -28,7 +28,9 @@ class PlayGround:
     default_frames_enemies_to_shoot = 35
     default_frames_to_mystery = 600
 
-    def __init__(self):
+    def __init__(self,
+                 screen_manager):
+        self.screen_manager = screen_manager
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.current_enemies_wave = 0
         self.frames_to_update_enemies_position = PlayGround.default_frames_to_update_enemies_position
@@ -36,6 +38,8 @@ class PlayGround:
         self.points = 0
         self.player_bullets = pygame.sprite.Group()
         self.enemy_bullets = pygame.sprite.Group()
+        self.self_update_ability_entities = pygame.sprite.Group()
+        self.self_not_update_ability_entities = pygame.sprite.Group()
         self.player = PlayerEntity(PLAYER_DEFAULT_POSITION[0],
                                    PLAYER_DEFAULT_POSITION[1],
                                    self.player_bullets)
@@ -48,11 +52,17 @@ class PlayGround:
         self.detection_zone = DetectionZone()
         self.clock = pygame.time.Clock()
 
+    def set_period_groups_empty(self):
+        self.player_bullets.empty()
+        self.enemy_bullets.empty()
+        self.self_update_ability_entities.empty()
+        self.self_not_update_ability_entities.empty()
+
     def restart_game(self):
         self.points = 0
         self.current_enemies_wave = 0
         self.player_bullets.empty()
-        self.enemy_bullets.empty()
+        self.set_period_groups_empty()
         self.frames_to_update_enemies_position = PlayGround.default_frames_to_update_enemies_position
         self.frames_enemies_to_shoot = PlayGround.default_frames_enemies_to_shoot
         self.player.repair(PLAYER_DEFAULT_POSITION[0],
@@ -68,7 +78,8 @@ class PlayGround:
 
     @staticmethod
     def deal_with_group_bullet_collision(group,
-                                         group_of_bullets):
+                                         group_of_bullets,
+                                         group_to_remove):
         price_collected = 0
         collision = pygame.sprite.groupcollide(group,
                                                group_of_bullets,
@@ -79,13 +90,16 @@ class PlayGround:
                 instance.reduce_health(bullet.get_damage())
             if instance.get_health() <= 0:
                 price_collected += instance.get_price()
+                group_to_remove.add(instance)
+                group.remove(instance)
         return price_collected
 
     def deal_with_shield_bullet_collision(self,
                                           group_of_bullets):
         for shield in self.shields:
             PlayGround.deal_with_group_bullet_collision(shield,
-                                                        group_of_bullets)
+                                                        group_of_bullets,
+                                                        self.self_update_ability_entities)
 
     def deal_with_shield_enemy_collision(self):
         for shield in self.shields:
@@ -104,11 +118,13 @@ class PlayGround:
 
     def deal_with_enemy_bullet_collision(self):
         return PlayGround.deal_with_group_bullet_collision(self.enemies,
-                                                           self.player_bullets)
+                                                           self.player_bullets,
+                                                           self.self_not_update_ability_entities)
 
     def deal_with_mystery_bullet_collision(self):
         return PlayGround.deal_with_group_bullet_collision(self.mystery,
-                                                           self.player_bullets)
+                                                           self.player_bullets,
+                                                           self.self_update_ability_entities)
 
     def deal_with_bullet_bullet_collision(self):
         pygame.sprite.groupcollide(self.player_bullets,
@@ -151,8 +167,7 @@ class PlayGround:
         self.frames_enemies_to_shoot -= 5
 
     def level_changer(self):
-        self.enemy_bullets.empty()
-        self.player_bullets.empty()
+        self.set_period_groups_empty()
         pygame.time.wait(1000)
         self.player.increase_health(1)
         self.current_enemies_wave += 1
@@ -165,20 +180,37 @@ class PlayGround:
                                           ENEMIES_WAVE_DATA[self.current_enemies_wave])
         pygame.time.wait(1000)
 
+    def record_writer(self):
+        with open("Config/RecordsData.json", "r") as f:
+            records_data = json.load(f)
+        records_scores = [record["score"] for record in records_data]
+        if len(records_scores) == 0 \
+                or self.points > max(records_scores):
+            record_name = name_input()
+            record_note = {"name": record_name, "score": self.points}
+            records_data.insert(0, record_note)
+            with open("Config/RecordsData.json", "w") as f:
+                json.dump(records_data,
+                          f,
+                          indent=5)
+
     def screen_entities_update(self):
+        self.screen.fill(SCREEN_BACKGROUND_COLOR)
         self.player.update()
         self.player_bullets.update()
         self.enemy_bullets.update()
         self.mystery.update()
+        self.self_update_ability_entities.update()
 
     def screen_entities_draw(self):
-        self.screen.fill(BLACK)
         self.screen.blit(self.player.image,
                          self.player.rect)
         self.enemies.draw(self.screen)
         self.mystery.draw(self.screen)
         for shield in self.shields:
             shield.draw(self.screen)
+        self.self_update_ability_entities.draw(self.screen)
+        self.self_not_update_ability_entities.draw(self.screen)
         self.player_bullets.draw(self.screen)
         self.enemy_bullets.draw(self.screen)
 
@@ -192,14 +224,20 @@ class PlayGround:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    sys.exit()
+                    self.screen_manager.next_action = "Exit"
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.screen_manager.next_action = "Menu"
+                        return
 
             self.screen_entities_update()
             if frames_to_shoot == self.frames_enemies_to_shoot:
                 self.enemies.shoot()
                 frames_to_shoot = 0
             if frames_to_move == self.frames_to_update_enemies_position:
+                self.self_not_update_ability_entities.update(self.enemies.get_x_step(),
+                                                             self.enemies.get_y_step())
                 self.enemies.update()
                 frames_to_move = 0
             if frames_to_mystery == self.default_frames_to_mystery:
@@ -208,17 +246,16 @@ class PlayGround:
             self.collision_controller()
 
             self.screen_entities_draw()
-            pygame.display.update()
+            pygame.display.flip()
 
             if self.win_checker():
                 self.level_changer()
+                continue
             if self.defeat_checker():
-                break
+                self.record_writer()
+                self.screen_manager.next_action = "Menu"
+                return
 
             frames_to_move += 1
             frames_to_shoot += 1
             frames_to_mystery += 1
-
-
-PlayGround = PlayGround()
-PlayGround.run()
