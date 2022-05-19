@@ -1,14 +1,18 @@
 from Bullet.GameBullets import ConstPowerHighSpeedBullet, ConstPowerMediumSpeedBullet, VariatePowerLowSpeedBullet
 import pygame
 import json
+import os
 
-
+pygame.init()
 with open("Config/WeaponReloadData.json", "r") as f:
     class_data = json.load(f)
+SOUNDS_DIR = "Bullet/BulletSounds/"
 
 
 class Weapon:
     weapons_call_down = class_data[:]
+    weapons_sounds = [pygame.mixer.Sound(SOUNDS_DIR + sound_filename)
+                      for sound_filename in os.listdir(SOUNDS_DIR)]
 
     def __init__(self,
                  parent_entity,
@@ -43,6 +47,7 @@ class Weapon:
             self.parent_entity.group_of_bullets.add(VariatePowerLowSpeedBullet(self.parent_entity.rect.centerx,
                                                                                self.parent_entity.rect.centery,
                                                                                self.parent_entity.get_conflict_side()))
+        Weapon.weapons_sounds[self.current_bullet_preset - 1].play()
 
     def shoot(self):
         self.correct_shoot_ability()

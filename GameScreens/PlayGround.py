@@ -14,13 +14,44 @@ SCREEN_BACKGROUND_COLOR = [0, 0, 0]
 FPS = SCREEN_SETTINGS["fps"]
 PLAYER_DEFAULT_POSITION = [WIDTH / 2, HEIGHT - 50]
 ENEMIES_DEFAULT_POSITION = [WIDTH - 50, HEIGHT / 2]
-MYSTERY_DEFAULT_POSITION = [WIDTH, 30]
+MYSTERY_DEFAULT_POSITION = [WIDTH, 70]
 SHIELD_DEFAULT_POSITIONS = [[WIDTH/5, HEIGHT - 170],
                             [2 * WIDTH/5, HEIGHT - 170],
                             [3 * WIDTH/5, HEIGHT - 170],
                             [4 * WIDTH/5, HEIGHT - 170]]
 with open("Config/EnemyWaveData.json", "r") as f:
     ENEMIES_WAVE_DATA = json.load(f)
+BLACK_SURFACE_SIZE = [100, 40]
+INTERFACE_ELEMENT_SIZE = [200, 40]
+TEXT_FONT = pygame.font.SysFont("arial", 30)
+TEXT_COLOR = [255, 255, 255]
+
+
+class BlackSurface(pygame.surface.Surface):
+    def __init__(self):
+        super(BlackSurface, self).__init__(BLACK_SURFACE_SIZE)
+        self.fill(SCREEN_BACKGROUND_COLOR)
+
+
+class InterfaceElement(pygame.surface.Surface):
+    def __init__(self,
+                 const_text,
+                 value):
+        super(InterfaceElement, self).__init__(INTERFACE_ELEMENT_SIZE)
+        self.blit(TEXT_FONT.render(const_text,
+                                   True,
+                                   TEXT_COLOR),
+                  (10, 5))
+        self.set_value(value)
+
+    def set_value(self,
+                  value):
+        self.blit(BlackSurface(),
+                  (100, 0))
+        self.blit(TEXT_FONT.render(str(value),
+                                   True,
+                                   TEXT_COLOR),
+                  (100, 5))
 
 
 class PlayGround:
@@ -51,6 +82,12 @@ class PlayGround:
         self.shields = [ShieldGroup(shield[0], shield[1]) for shield in SHIELD_DEFAULT_POSITIONS]
         self.detection_zone = DetectionZone()
         self.clock = pygame.time.Clock()
+        self.points_output = InterfaceElement("Score: ",
+                                              0)
+        self.current_enemies_wave_output = InterfaceElement("Wave: ",
+                                                            self.current_enemies_wave + 1)
+        self.health_output = InterfaceElement("Health: ",
+                                              self.player.health)
 
     def set_period_groups_empty(self):
         self.player_bullets.empty()
@@ -75,6 +112,9 @@ class PlayGround:
             shield.empty()
         self.shields.clear()
         self.shields = [ShieldGroup(shield[0], shield[1]) for shield in SHIELD_DEFAULT_POSITIONS]
+        self.points_output.set_value(0)
+        self.current_enemies_wave_output.set_value(self.current_enemies_wave + 1)
+        self.health_output.set_value(self.player.health)
 
     @staticmethod
     def deal_with_group_bullet_collision(group,
@@ -171,6 +211,7 @@ class PlayGround:
         pygame.time.wait(1000)
         self.player.increase_health(1)
         self.current_enemies_wave += 1
+        self.current_enemies_wave_output.set_value(self.current_enemies_wave + 1)
         if self.current_enemies_wave == len(ENEMIES_WAVE_DATA):
             self.current_enemies_wave = 0
             self.increase_difficulty_level()
@@ -195,14 +236,16 @@ class PlayGround:
                           indent=5)
 
     def screen_entities_update(self):
-        self.screen.fill(SCREEN_BACKGROUND_COLOR)
         self.player.update()
         self.player_bullets.update()
         self.enemy_bullets.update()
         self.mystery.update()
         self.self_update_ability_entities.update()
+        self.points_output.set_value(self.points)
+        self.health_output.set_value(self.player.health)
 
     def screen_entities_draw(self):
+        self.screen.fill(SCREEN_BACKGROUND_COLOR)
         self.screen.blit(self.player.image,
                          self.player.rect)
         self.enemies.draw(self.screen)
@@ -213,6 +256,12 @@ class PlayGround:
         self.self_not_update_ability_entities.draw(self.screen)
         self.player_bullets.draw(self.screen)
         self.enemy_bullets.draw(self.screen)
+        self.screen.blit(self.points_output,
+                         (0, 0))
+        self.screen.blit(self.current_enemies_wave_output,
+                         (WIDTH / 2 - INTERFACE_ELEMENT_SIZE[0] / 2, 0))
+        self.screen.blit(self.health_output,
+                         (WIDTH - INTERFACE_ELEMENT_SIZE[0], 0))
 
     def run(self):
         pygame.init()
